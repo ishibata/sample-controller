@@ -59,6 +59,7 @@ func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 // NewForConfig is equivalent to NewForConfigAndClient(c, httpClient),
 // where httpClient was generated with rest.HTTPClientFor(c).
 func NewForConfig(c *rest.Config) (*Clientset, error) {
+	fmt.Println("NewForConfig(c *rest.Config) (*Clientset, error) called")
 	configShallowCopy := *c
 
 	if configShallowCopy.UserAgent == "" {
@@ -71,6 +72,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 		return nil, err
 	}
 
+	fmt.Println("NewForConfig(c *rest.Config) (*Clientset, error) finished")
 	return NewForConfigAndClient(&configShallowCopy, httpClient)
 }
 

@@ -30,6 +30,8 @@ import (
 	clientset "k8s.io/sample-controller/pkg/generated/clientset/versioned"
 	informers "k8s.io/sample-controller/pkg/generated/informers/externalversions"
 	"k8s.io/sample-controller/pkg/signals"
+
+	"fmt"
 )
 
 var (
@@ -38,12 +40,15 @@ var (
 )
 
 func main() {
+	fmt.Println("main start")
 	klog.InitFlags(nil)
 	flag.Parse()
 
 	// set up signals so we handle the first shutdown signal gracefully
+	fmt.Println("SetupSignalHandler() call")
 	stopCh := signals.SetupSignalHandler()
 
+	fmt.Println(kubeconfig)
 	cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
 	if err != nil {
 		klog.Fatalf("Error building kubeconfig: %s", err.Error())
@@ -54,6 +59,7 @@ func main() {
 		klog.Fatalf("Error building kubernetes clientset: %s", err.Error())
 	}
 
+	fmt.Println("clientset.NewForConfig(cfg) call")
 	exampleClient, err := clientset.NewForConfig(cfg)
 	if err != nil {
 		klog.Fatalf("Error building example clientset: %s", err.Error())
@@ -62,13 +68,19 @@ func main() {
 	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
 	exampleInformerFactory := informers.NewSharedInformerFactory(exampleClient, time.Second*30)
 
+	fmt.Println("controller initialize start")
 	controller := NewController(kubeClient, exampleClient,
 		kubeInformerFactory.Apps().V1().Deployments(),
 		exampleInformerFactory.Samplecontroller().V1alpha1().Foos())
 
+	fmt.Println("controller initialize finish")
 	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
 	// Start method is non-blocking and runs all registered informers in a dedicated goroutine.
+
+	fmt.Println("kubeInformerFactory.Start(stopCh) call")
 	kubeInformerFactory.Start(stopCh)
+
+	fmt.Println("exampleInformerFactory.Start(stopCh) call")
 	exampleInformerFactory.Start(stopCh)
 
 	if err = controller.Run(2, stopCh); err != nil {

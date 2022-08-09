@@ -91,6 +91,8 @@ func NewController(
 	deploymentInformer appsinformers.DeploymentInformer,
 	fooInformer informers.FooInformer) *Controller {
 
+	fmt.Println("NewController called")
+
 	// Create event broadcaster
 	// Add sample-controller types to the default Kubernetes Scheme so Events can be
 	// logged for sample-controller types.
@@ -149,6 +151,7 @@ func NewController(
 // is closed, at which point it will shutdown the workqueue and wait for
 // workers to finish processing their current work items.
 func (c *Controller) Run(workers int, stopCh <-chan struct{}) error {
+	fmt.Println("controller Run Start")
 	defer utilruntime.HandleCrash()
 	defer c.workqueue.ShutDown()
 
@@ -171,6 +174,7 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) error {
 	<-stopCh
 	klog.Info("Shutting down workers")
 
+
 	return nil
 }
 
@@ -178,6 +182,7 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) error {
 // processNextWorkItem function in order to read and process a message on the
 // workqueue.
 func (c *Controller) runWorker() {
+	fmt.Println("runWorker() called")
 	for c.processNextWorkItem() {
 	}
 }
@@ -185,6 +190,7 @@ func (c *Controller) runWorker() {
 // processNextWorkItem will read a single work item off the workqueue and
 // attempt to process it, by calling the syncHandler.
 func (c *Controller) processNextWorkItem() bool {
+	fmt.Println("processNextWorkItem() called")
 	obj, shutdown := c.workqueue.Get()
 
 	if shutdown {

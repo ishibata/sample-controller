@@ -19,6 +19,7 @@ package signals
 import (
 	"os"
 	"os/signal"
+	"fmt"
 )
 
 var onlyOneSignalHandler = make(chan struct{})
@@ -27,6 +28,7 @@ var onlyOneSignalHandler = make(chan struct{})
 // which is closed on one of these signals. If a second signal is caught, the program
 // is terminated with exit code 1.
 func SetupSignalHandler() (stopCh <-chan struct{}) {
+	fmt.Println("SetupSignalHandler() called")
 	close(onlyOneSignalHandler) // panics when called twice
 
 	stop := make(chan struct{})
@@ -39,5 +41,6 @@ func SetupSignalHandler() (stopCh <-chan struct{}) {
 		os.Exit(1) // second signal. Exit directly.
 	}()
 
+	fmt.Println("SetupSignalHandler() finish")
 	return stop
 }
