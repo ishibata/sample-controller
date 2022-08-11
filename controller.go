@@ -193,6 +193,8 @@ func (c *Controller) processNextWorkItem() bool {
 	fmt.Println("processNextWorkItem() called")
 	obj, shutdown := c.workqueue.Get()
 
+	fmt.Println("shutdown:")
+	fmt.Println(shutdown)
 	if shutdown {
 		return false
 	}
@@ -247,6 +249,7 @@ func (c *Controller) processNextWorkItem() bool {
 // converge the two. It then updates the Status block of the Foo resource
 // with the current status of the resource.
 func (c *Controller) syncHandler(key string) error {
+	fmt.Println("syncHandler() called")
 	// Convert the namespace/name string into a distinct namespace and name
 	namespace, name, err := cache.SplitMetaNamespaceKey(key)
 	if err != nil {
